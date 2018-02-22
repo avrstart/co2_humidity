@@ -111,8 +111,6 @@ int main(void) {
 	ili9163_init(&ili9163_ops, LCD_ORIENTATION0);
 	ili9163_clear(decodeRgbValue(0, 0, 0));
 
-    HAL_UART_Receive_IT(&huart2, receiveBuffer, 1); 
-
 	while (1) {
 
         poll_gas_sensor();
@@ -135,10 +133,10 @@ void poll_humidity(void)
     
         DHT11_getData(&dht11_ops, &dht11_data);
     
-        sprintf((char *) tbuf, "Humidity %d", dht11_data.humidity);
+        sprintf((char *) tbuf, "Humidity %d  ", dht11_data.humidity);
         ili9163_puts((char *) tbuf, lcdTextX(3), lcdTextY(5),
 						decodeRgbValue(31, 0, 0), decodeRgbValue(0, 0, 0));
-        sprintf((char *) tbuf, "Temper %d", dht11_data.temper);
+        sprintf((char *) tbuf, "Temper %d  ", dht11_data.temper);
         ili9163_puts((char *) tbuf, lcdTextX(3), lcdTextY(1),
 						decodeRgbValue(31, 0, 0), decodeRgbValue(0, 0, 0));
         
@@ -167,6 +165,7 @@ void poll_gas_sensor(void)
         start_time = HAL_GetTick();
         co2_txmode = 1;
         HAL_UART_Transmit(&huart2, co2_txdata, sizeof(co2_txdata), 1000);
+        HAL_UART_Receive_IT(&huart2, receiveBuffer, 1); 
         break;
        
     case 1:
@@ -200,7 +199,7 @@ void poll_gas_sensor(void)
         case 3:
             co2_ppm += uart_byte;
             co2_rxmode = 0;
-            sprintf((char *) tbuf, "PPM = %d", co2_ppm);
+            sprintf((char *) tbuf, "PPM = %d  ", co2_ppm);
             ili9163_puts((char *) tbuf, lcdTextX(3), lcdTextY(9),
 						decodeRgbValue(31, 0, 0), decodeRgbValue(0, 0, 0));
             break;
